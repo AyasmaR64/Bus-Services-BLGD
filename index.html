@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bus services</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="./lib/maplibre-gl.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./lib/all.min.css" />
+</head>
+<body data-theme="light">
+    <section id="search-page" class="page active">
+        <header id="fullscreen-header" class="header">
+            <div style="position: fixed; left: 0; top: 0">
+                <img src="images/hero.png" style="height: 50px" />
+            </div>
+            <div
+                style="
+                position: fixed;
+                top: 8px;
+                right: 20px;
+                color: #fef48c;
+                text-align: right;
+                font-size: 14px;
+                "
+                >
+                <span style="color: #ffffff"
+                    ><b id="brand-main">BUS </b></span
+                >Services<br />
+                <span style="color: #e8f397; font-size: 12px; font-weight: bold"
+                    ><i id="brand-sub">Balangoda </i></span
+                >
+            </div>
+            <hr class="hr1" />
+        </header>
+
+        <main class="main-container">
+            <div class="left-panel">
+                <div class="card">
+                    <label id="label-route">බස් මාර්ගය</label>
+                    <select id="routeSelect">
+                        <option value="BL-01" selected>බලංගොඩ-වේලිඔය-හම්බෙගමුව</option>
+                        <option value="BL-02">බලංගොඩ-වැලිපතයාය-කල්තොට</option>
+                        <option value="BL-03">බලංගොඩ-රජවක-මුල්ගම</option>
+                    </select>
+
+                    <label id="label-service">බස් සේවාව</label>
+                    <select id="bus-service">
+                        <option value="normal" selected>
+                            ශ්‍රී ලංගම සහ පුද්ගලික
+                        </option>
+                        <option value="sltb">ශ්‍රී ලංගම</option>
+                        <option value="private">පුද්ගලික</option>
+                    </select>
+
+                    <label id="label-type">සේවා මාදිලිය</label>
+                    <select id="service-type">
+                        <option value="normal" selected>
+                            සාමාන්‍ය</option>
+                        <option value="express">දුර ගමන් සේවා</option>
+                        <option value="AC">AC</option>
+                    </select>
+
+                    <label id="label-from">ගමනාරමිභය</label>
+                    <select id="fromSelect">
+                        <option value="Balangoda" selected>බලංගොඩ</option>
+                        <option value="Kirimatitenna">කිරිමැටිතැන්න</option>
+                        <option value="Depalamulla">දෙපෑලමුල්ල</option>
+                        <option value="Bowatta">බෝවත්ත</option>
+                        <option value="Rajavaka">රජවක</option>
+                        <option value="Nawaneliya">නවනැලිය</option>
+                        <option value="Molamure">මොලමුරේ</option>
+                        <option value="Tanjantenna">තන්ජන්තැන්න</option>
+                        <option value="DuwilialleJCT">16කනුව</option>
+                        <option value="Kaltota">කල්තොට</option>
+                        <option value="Welioya">වේලිඔය</option>
+                    </select>
+
+                    <label id="label-to">ගමනාන්තය</label>
+                    <select id="toSelect">
+                        <option value="Balangoda">බලංගොඩ</option>
+                        <option value="Kirimatitenna">කිරිමැටිතැන්න</option>
+                        <option value="Depalamulla">දෙපෑලමුල්ල</option>
+                        <option value="Bowatta">බෝවත්ත</option>
+                        <option value="Rajavaka">රජවක</option>
+                        <option value="Nawaneliya">නවනැලිය</option>
+                        <option value="Molamure">මොලමුරේ</option>
+                        <option value="Tanjantenna">තන්ජන්තැන්න</option>
+                        <option value="DuwilialleJCT">16කනුව</option>
+                        <option value="Kaltota">කල්තොට</option>
+                        <option value="Welioya" selected>වේලිඔය</option>
+                    </select>
+
+                    <label id="label-time">වේලාව</label>
+                    <input type="time" id="timeInput" />
+                    <div class="searchBtn" id="searchBtn">
+                        සොයන්න
+                    </div>
+                    <div class="clear-btn" id="clearBtn">
+                        clear
+                    </div>
+
+
+                </div>
+
+                <div class="card result-card">
+                    <span class="pill" id="servicePill" style="display: none"></span>
+                    <span
+                        class="type"
+                        id="serviceTypePill"
+                        style="display: none"
+                        ></span>
+                    <label id="label-result">ප්‍රතිපල</label>
+                    <h3 id="resultShort" style="margin: 6px">--</h3>
+                    <div id="resultStops">
+                        <div>
+                            <strong id="fromName">--</strong>
+                            <span id="fromTime">--:--</span>
+                        </div>
+                        <div>
+                            <strong id="toName">--</strong> <span id="toTime">--:--</span>
+                        </div>
+                    </div>
+                    <h1 id="resultTime" style="margin: 10px; font-size: 28px">--:--</h1>
+                    <div class="nav-btns">
+                        <button class="btn-sm" id="prevBusBtn">
+                            <i class="fa fa-chevron-left"></i> පසුගිය
+                        </button>
+                        <button class="btn-sm" id="nextBusBtn">
+                            මීළඟ <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div
+                        id="resultDetails"
+                        style="margin-top: 10px; font-size: 14px; color: #d7d7d7"
+                        ></div>
+                </div>
+
+                <div class="simulator-cont">
+                    <div class="simulator-card">
+                        <div class="simulator-header">
+                            <div class="header-title">
+                                <span class="live-dot"></span>
+                                <h3>Live Bus Route Simulator (Route 99)</h3>
+                            </div>
+                            <div class="header-controls">
+                                <button id="toggleSimBtn" class="btn btn-primary">
+                                    Pause Simulation
+                                </button>
+                                <button id="resetSimBtn" class="btn btn-secondary">
+                                    Reset Route
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Map Container -->
+                        <div id="sim-map"></div>
+
+                        <!-- Floating Info HUD -->
+                        <div class="hud-panel">
+                            <div class="hud-item">
+                                <span class="hud-label">Current Velocity</span>
+                                <span id="busSpeed" class="hud-value">42 km/h</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Next Stop</span>
+                                <span id="nextStopName" class="hud-value">Balangoda Station</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Status</span>
+                                <span id="busStatus" class="hud-value status-moving">On Route</span
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar Footer -->
+                        <div class="simulator-footer">
+                            <div class="progress-info">
+                                <span id="currentPassingStop"
+                                    >Passing: Departure Terminal</span
+                                >
+                                <span id="routeProgressPct">0%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="routeProgressBar" class="progress-bar-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <section id="map-page" class="page">
+        <div id="map">
+
+            <script src="./lib/pmtiles.js"></script>
+            <script src="./lib/maplibre-gl.js"></script>
+            <div class="map-buttons">
+                <button id="setFromBtn" title="Set From">
+                    <svg class="set-from" viewBox="0 0 512 512">
+                        <path
+                            d="M367.9 329.76c-4.62 5.3-9.78 10.1-15.9 13.65v22.94c66.52 9.34 112 28.05 112 49.65 0 30.93-93.12 56-208 56S48 446.93 48 416c0-21.6 45.48-40.3 112-49.65v-22.94c-6.12-3.55-11.28-8.35-15.9-13.65C58.87 345.34 0 378.05 0 416c0 53.02 114.62 96 256 96s256-42.98 256-96c0-37.95-58.87-70.66-144.1-86.24zM256 128c35.35 0 64-28.65 64-64S291.35 0 256 0s-64 28.65-64 64 28.65 64 64 64zm-64 192v96c0 17.67 14.33 32 32 32h64c17.67 0 32-14.33 32-32v-96c17.67 0 32-14.33 32-32v-96c0-26.51-21.49-48-48-48h-11.8c-11.07 5.03-23.26 8-36.2 8s-25.13-2.97-36.2-8H208c-26.51 0-48 21.49-48 48v96c0 17.67 14.33 32 32 32z"
+                            />
+                    </svg>
+                </button>
+                <button id="setToBtn" title="Set To">
+                    <svg class="set-to" viewBox="0 0 512 512">
+                        <path
+                            d="M367.9 329.76c-4.62 5.3-9.78 10.1-15.9 13.65v22.94c66.52 9.34 112 28.05 112 49.65 0 30.93-93.12 56-208 56S48 446.93 48 416c0-21.6 45.48-40.3 112-49.65v-22.94c-6.12-3.55-11.28-8.35-15.9-13.65C58.87 345.34 0 378.05 0 416c0 53.02 114.62 96 256 96s256-42.98 256-96c0-37.95-58.87-70.66-144.1-86.24zM256 128c35.35 0 64-28.65 64-64S291.35 0 256 0s-64 28.65-64 64 28.65 64 64 64zm-64 192v96c0 17.67 14.33 32 32 32h64c17.67 0 32-14.33 32-32v-96c17.67 0 32-14.33 32-32v-96c0-26.51-21.49-48-48-48h-11.8c-11.07 5.03-23.26 8-36.2 8s-25.13-2.97-36.2-8H208c-26.51 0-48 21.49-48 48v96c0 17.67 14.33 32 32 32z"
+                            />
+                    </svg>
+                </button>
+                <button id="centerBtn" title="Locate me">
+                    <svg class="location-svg" viewBox="0 0 512 512">
+                        <path
+                            d="M444.52 3.52L28.74 195.42c-47.97 22.39-31.98 92.75 19.19 92.75h175.91v175.91c0 51.17 70.36 67.17 92.75 19.19l191.9-415.78c15.99-38.39-25.59-79.97-63.97-63.97z"
+                            />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="saved-page" class="page">
+        <div id="main-content">
+            <div class="section-card">
+                <div class="saved-title">
+                    <div>
+                        <p>
+                            Saved Bus Stops
+                        </p>
+                    </div>
+                    <svg viewBox="0 0 256 256" xml:space="preserve">
+                        <g
+                            style="
+                            stroke: none;
+                            stroke-width: 0;
+                            stroke-dasharray: none;
+                            stroke-linecap: butt;
+                            stroke-linejoin: miter;
+                            stroke-miterlimit: 10;
+                            fill: none;
+                            fill-rule: nonzero;
+                            opacity: 1;
+                            "
+                            transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)"
+                            >
+                            <path
+                                d="M 45 0 C 25.464 0 9.625 15.838 9.625 35.375 c 0 8.722 3.171 16.693 8.404 22.861 L 45 90 l 26.97 -31.765 c 5.233 -6.167 8.404 -14.139 8.404 -22.861 C 80.375 15.838 64.537 0 45 0 z M 45 59.157 c -13.808 0 -25 -11.192 -25 -25 s 11.192 -25 25 -25 s 25 11.192 25 25 S 58.808 59.157 45 59.157 z"
+                                style="
+                                stroke: none;
+                                stroke-width: 1;
+                                stroke-dasharray: none;
+                                stroke-linecap: butt;
+                                stroke-linejoin: miter;
+                                stroke-miterlimit: 10;
+                                fill: rgb(247, 0, 0);
+                                fill-rule: nonzero;
+                                opacity: 1;
+                                "
+                                transform=" matrix(1 0 0 1 0 0) "
+                                stroke-linecap="round"
+                                />
+                            <path
+                                d="M 57.779 25.328 h -0.7 v -2.289 V 22.11 v -1.444 c 0 -1.125 -0.912 -2.036 -2.036 -2.036 H 34.957 c -1.125 0 -2.036 0.912 -2.036 2.036 v 1.444 v 0.929 v 2.289 h -0.7 c -0.662 0 -1.198 0.536 -1.198 1.198 v 4.585 c 0 0.662 0.536 1.198 1.198 1.198 h 0.7 v 12.557 c 0 0.48 0.389 0.869 0.869 0.869 h 1.466 v 2.541 c 0 0.896 0.727 1.623 1.623 1.623 h 2.082 c 0.896 0 1.623 -0.727 1.623 -1.623 v -2.541 h 8.833 v 2.541 c 0 0.896 0.727 1.623 1.623 1.623 h 2.082 c 0.896 0 1.623 -0.727 1.623 -1.623 v -2.541 h 1.466 c 0.48 0 0.869 -0.389 0.869 -0.869 V 32.309 h 0.7 c 0.662 0 1.198 -0.536 1.198 -1.198 v -4.585 C 58.977 25.864 58.441 25.328 57.779 25.328 z M 38.728 43.367 c -1.381 0 -2.5 -1.119 -2.5 -2.5 s 1.119 -2.5 2.5 -2.5 s 2.5 1.119 2.5 2.5 S 40.109 43.367 38.728 43.367 z M 51.272 43.367 c -1.381 0 -2.5 -1.119 -2.5 -2.5 s 1.119 -2.5 2.5 -2.5 s 2.5 1.119 2.5 2.5 S 52.653 43.367 51.272 43.367 z M 54.323 34.619 c 0 0.514 -0.416 0.93 -0.93 0.93 H 36.607 c -0.514 0 -0.93 -0.416 -0.93 -0.93 V 24.523 c 0 -0.514 0.416 -0.93 0.93 -0.93 h 16.787 c 0.514 0 0.93 0.416 0.93 0.93 V 34.619 z"
+                                style="
+                                stroke: none;
+                                stroke-width: 1;
+                                stroke-dasharray: none;
+                                stroke-linecap: butt;
+                                stroke-linejoin: miter;
+                                stroke-miterlimit: 10;
+                                fill: rgb(255, 255, 255);
+                                fill-rule: nonzero;
+                                opacity: 1;
+                                "
+                                transform=" matrix(1 0 0 1 0 0) "
+                                stroke-linecap="round"
+                                />
+                        </g>
+                    </svg>
+                </div>
+                <card id="busStopCard" class="bus-stop-card">
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-1
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-2
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-3
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-4
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-5
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-1
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-2
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-3
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-4
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bus-stop">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z" /></svg>
+                        </div>
+                        <div>
+                            bus stop-5
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" /></svg>
+                        </div>
+                    </div>
+                </card>
+            </div>
+        </div>
+    </section>
+
+    <section id="settings-page" class="page">
+        <div id="main-content">
+            <div class="section-card">
+                <div class="settings-header">
+                    <div>
+                        <p>
+                            Settings
+                        </p>
+                    </div>
+                    <div>
+                        <div class="cogwheel-1">
+                            <svg id="Layer_1"
+                                data-name="Layer 1"
+                                viewBox="0 0 24 24"
+                                >
+                                <path
+                                    d="M21,12c0-.622-.071-1.26-.211-1.899l2.998-1.85-3.151-5.106-2.998,1.851c-.801-.647-1.685-1.145-2.638-1.481V0h-6V3.514c-.953,.337-1.837,.834-2.638,1.481l-2.998-1.851L.213,8.251l2.998,1.85c-.14,.64-.211,1.277-.211,1.899s.071,1.26,.211,1.899L.213,15.749l3.151,5.106,2.998-1.851c.801,.647,1.685,1.145,2.638,1.481v3.514h6v-3.514c.953-.337,1.837-.834,2.638-1.481l2.998,1.851,3.151-5.106-2.998-1.85c.14-.64,.211-1.277,.211-1.899Zm1.411,4.075l-2.101,3.403-2.769-1.708c-.968,.911-2.139,1.583-3.541,1.985v3.244h-4v-3.244c-1.278-.331-2.461-.983-3.541-1.985l-2.769,1.708-2.101-3.403,2.769-1.709s-.358-.93-.358-2.366,.358-2.366,.358-2.366l-2.769-1.709,2.101-3.403,2.769,1.708c.977-.884,2.15-1.553,3.541-1.985V1h4v3.244c1.276,.324,2.454,.993,3.541,1.985l2.769-1.708,2.101,3.403-2.769,1.709s.358,.956,.358,2.366-.358,2.366-.358,2.366l2.769,1.709ZM12,8c-2.206,0-4,1.794-4,4s1.794,4,4,4,4-1.794,4-4-1.794-4-4-4Zm0,7c-1.654,0-3-1.346-3-3s1.346-3,3-3,3,1.346,3,3-1.346,3-3,3Z"
+                                    />
+                            </svg>
+                        </div>
+                        <div class="cogwheel-2">
+                            <svg
+                                id="Layer_1"
+                                data-name="Layer 1"
+                                viewBox="0 0 24 24"
+                                >
+                                <path
+                                    d="M21,12c0-.622-.071-1.26-.211-1.899l2.998-1.85-3.151-5.106-2.998,1.851c-.801-.647-1.685-1.145-2.638-1.481V0h-6V3.514c-.953,.337-1.837,.834-2.638,1.481l-2.998-1.851L.213,8.251l2.998,1.85c-.14,.64-.211,1.277-.211,1.899s.071,1.26,.211,1.899L.213,15.749l3.151,5.106,2.998-1.851c.801,.647,1.685,1.145,2.638,1.481v3.514h6v-3.514c.953-.337,1.837-.834,2.638-1.481l2.998,1.851,3.151-5.106-2.998-1.85c.14-.64,.211-1.277,.211-1.899Zm1.411,4.075l-2.101,3.403-2.769-1.708c-.968,.911-2.139,1.583-3.541,1.985v3.244h-4v-3.244c-1.278-.331-2.461-.983-3.541-1.985l-2.769,1.708-2.101-3.403,2.769-1.709s-.358-.93-.358-2.366,.358-2.366,.358-2.366l-2.769-1.709,2.101-3.403,2.769,1.708c.977-.884,2.15-1.553,3.541-1.985V1h4v3.244c1.276,.324,2.454,.993,3.541,1.985l2.769-1.708,2.101,3.403-2.769,1.709s.358,.956,.358,2.366-.358,2.366-.358,2.366l2.769,1.709ZM12,8c-2.206,0-4,1.794-4,4s1.794,4,4,4,4-1.794,4-4-1.794-4-4-4Zm0,7c-1.654,0-3-1.346-3-3s1.346-3,3-3,3,1.346,3,3-1.346,3-3,3Z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 10px 5px">
+                <label style="padding:10px 15px" for="langSelect">Language</label>
+                <select style="padding:15px 10px" id="langSelect">
+                    <option value="si">සිංහල</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </section>
+        <footer class="footer">
+            <nav class="bottom-nav">
+                <button class="nav-item active" onclick="showPage('search-page', this)">
+                    <svg class="nav-icon" viewBox="0 0 512 512">
+                        <path
+                            d="m 256,46.950197 a 170,10 0 0 0 -168.20898,8.634765 20,40 0 0 0 -0.65625,0.25586 170,10 0 0 0 -0.3086,0.138672 A 20,40 0 0 0 71,95.049803 l 0,39.999997 -10,0 -20,0 c -2.76131,2.8e-4 -4.99972,2.23869 -5,5 l 0,10 0,60 c 2.8e-4,2.76131 2.23869,4.99972 5,5 l 20,0 c 2.76131,-2.8e-4 4.99972,-2.23869 5,-5 l 0,-55 5,0 0,175 65,0 c 2.76131,2.8e-4 4.99972,2.23869 5,5 l 0,20 c -2.8e-4,2.76131 -2.23869,4.99972 -5,5 l -65,0 0,35 a 10,20 0 0 0 5,17.29883 l 0,42.70117 c 5.5e-4,5.52262 4.47738,9.99945 10,10 l 30,0 c 5.52262,-5.5e-4 9.99945,-4.47738 10,-10 l 0,-30 260,0 0,30 c 5.5e-4,5.52262 4.47738,9.99945 10,10 l 30,0 c 5.52262,-5.5e-4 9.99945,-4.47738 10,-10 l 0,-42.70898 a 10,20 0 0 0 5,-17.29102 l 0,-35 -65,0 c -2.76131,-2.8e-4 -4.99972,-2.23869 -5,-5 l 0,-20 c 2.8e-4,-2.76131 2.23869,-4.99972 5,-5 l 65,0 0,-175 5,0 0,55 c 2.8e-4,2.76131 2.23869,4.99972 5,5 l 20,0 c 2.76131,-2.8e-4 4.99972,-2.23869 5,-5 l 0,-60 0,-10 c -2.8e-4,-2.76131 -2.23869,-4.99972 -5,-5 l -20,0 -10,0 0,-39.999997 A 20,40 0 0 0 424.39844,55.672853 170,10 0 0 0 256,46.950197 Z m -155,18.099609 310,0 a 10,25 0 0 1 10,24.999997 l 0,19.999997 c -2.8e-4,2.76131 -2.23869,4.99972 -5,5 l -320,0 c -2.76131,-2.8e-4 -4.99972,-2.23869 -5,-5 l 0,-19.999997 a 10,25 0 0 1 10,-24.999997 z m -10,59.999994 330,0 c 5.52262,5.5e-4 9.99945,4.47738 10,10 l 0,150 c -5.5e-4,5.52262 -4.47738,9.99945 -10,10 l -39.57617,0 -8.77149,-4.36328 14.09571,0.0957 a 5.0005,5.0005 0 1 0 0.0664,-10 l -152.48047,-1.02539 a 5.0005,5.0005 0 1 0 -0.0664,10 l 115.62304,0.77735 22.8379,11.35937 A 10.001,10.001 0 0 1 371,302.0498 l -230,0 a 10.001,10.001 0 0 1 -3.76953,-0.74414 l 28.42773,-17.63477 123.89453,-8.02148 a 5.0005,5.0005 0 0 0 -0.29687,-9.99414 5.0005,5.0005 0 0 0 -0.34766,0.0156 l -158.52929,10.26368 a 5.0005,5.0005 0 1 0 0.64648,9.97851 l 13.45117,-0.87109 -16.13281,10.00781 -37.34375,0 c -5.52262,-5.5e-4 -9.99945,-4.47738 -10,-10 l 0,-150 c 5.5e-4,-5.52262 4.47738,-9.99945 10,-10 z"
+                            />
+                    </svg>
+                    <span>Buses</span>
+                </button>
+                <button class="nav-item" onclick="showPage('map-page', this)">
+                    <svg class="nav-icon map-svg" viewBox="0 0 640 640">
+                        <!--!Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                        <path
+                            class="map-path"
+                            d="M64 176L64 528C64 539.1 69.7 549.4 79.2 555.2C88.7 561 100.4 561.6 110.3 556.6L226.4 498.5L399.7 556.3C395.4 549.9 391.2 543.2 387.1 536.4C376.1 518.1 365.2 497.1 357.1 474.6L255.9 440.9L255.9 156.4L383.9 199.1L383.9 298.4C414.9 262.6 460.9 240 511.9 240C534.5 240 556.1 244.4 575.9 252.5L576 112C576 100.9 570.3 90.6 560.8 84.8C551.3 79 539.6 78.4 529.7 83.4L413.5 141.5L234.1 81.6C226 78.9 217.3 79.5 209.7 83.3L81.7 147.3C70.8 152.8 64 163.9 64 176z"
+                            />
+                        <path
+                            class="marker-path"
+                            d="M392 405.9C392 340.8 445.7 288 512 288C578.3 288 632 340.8 632 405.9C632 474.8 567.9 556.3 533.4 595.2C521.8 608.2 502.1 608.2 490.5 595.2C456 556.3 391.9 474.8 391.9 405.9zM512 448C534.1 448 552 430.1 552 408C552 385.9 534.1 368 512 368C489.9 368 472 385.9 472 408C472 430.1 489.9 448 512 448z"
+                            />
+                    </svg>
+                    <span>Map</span>
+                </button>
+                <button class="nav-item" onclick="showPage('saved-page', this)">
+                    <svg class="nav-icon" viewBox="0 0 512 512">
+                        <path
+                            d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"
+                            />
+                    </svg>
+                    <span>Saved</span>
+                </button>
+                <button class="nav-item" onclick="showPage('settings-page', this)">
+                    <svg class="nav-icon" viewBox="0 0 512 512">
+                        <path
+                            d="M501.1 395.7L384 278.6c-23.1-23.1-57.6-27.6-85.4-13.9L192 158.1V96L64 0 0 64l96 128h62.1l106.6 106.6c-13.6 27.8-9.2 62.3 13.9 85.4l117.1 117.1c14.6 14.6 38.2 14.6 52.7 0l52.7-52.7c14.5-14.6 14.5-38.2 0-52.7zM331.7 225c28.3 0 54.9 11 74.9 31l19.4 19.4c15.8-6.9 30.8-16.5 43.8-29.5 37.1-37.1 49.7-89.3 37.9-136.7-2.2-9-13.5-12.1-20.1-5.5l-74.4 74.4-67.9-11.3L334 98.9l74.4-74.4c6.6-6.6 3.4-17.9-5.7-20.2-47.4-11.7-99.6.9-136.6 37.9-28.5 28.5-41.9 66.1-41.2 103.6l82.1 82.1c8.1-1.9 16.5-2.9 24.7-2.9zm-103.9 82l-56.7-56.7L18.7 402.8c-25 25-25 65.5 0 90.5s65.5 25 90.5 0l123.6-123.6c-7.6-19.9-9.9-41.6-5-62.7zM64 472c-13.2 0-24-10.8-24-24 0-13.3 10.7-24 24-24s24 10.7 24 24c0 13.2-10.7 24-24 24z"
+                            />
+                    </svg>
+
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </footer>
+        <script src="./lib/all.min.js"></script>
+        <script src="./lib/turf.min.js"></script>
+        <script src="./lib/three.min.js"></script>
+        <script src="app.js"></script>
+        <script src="simulator.js"></script>
+    </body>
+</html>
