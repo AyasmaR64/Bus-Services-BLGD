@@ -1,5 +1,4 @@
-const CACHE_NAME = "Buses-BLGD-v2";
-
+const CACHE_NAME = "bus-balangoda-v2";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -56,74 +55,93 @@ const STATIC_ASSETS = [
   "./assets/sprites/markers/sprites@4x.png",
 ];
 
-// Install Event: Cache core static dependencies
+// Install Event: Cache all essential assets including the pmtiles file
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => self.skipWaiting()),
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    }),
   );
+  self.skipWaiting();
 });
 
 // Activate Event: Clean up old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) => {
-        return Promise.all(
-          keys.map((key) => {
-            if (key !== CACHE_NAME) {
-              return caches.delete(key);
-            }
-          }),
-        );
-      })
-      .then(() => self.clients.claim()),
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        }),
+      );
+    }),
   );
+  self.clientClaim;
 });
 
-// Fetch Event: Handle standard assets and PMTiles range requests offline
+// Fetch Event: Handle Range requests for PMTiles and Cache-First for static assets
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // Special handling for PMTiles to support slice/range requests offline
-  if (url.pathname.endsWith(".pmtiles")) {
-    event.respondId?.(handlePMTilesFetch(event.request));
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        return fetch(event.request)
-          .then((networkResponse) => {
-            return caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse.clone());
-              return networkResponse;
-            });
-          })
-          .catch(() => {
-            return new Response("Offline PMTiles unavailable", { status: 503 });
-          });
-      }),
-    );
+  // Special handler for PMTiles and Range requests
+  if (event.request.headers.has("range") || url.pathname.endsWith(".pmtiles")) {
+    event.respondWith(handleRangeRequest(event.request));
     return;
   }
 
-  // Standard cache-first strategy for other static assets
+  // Standard Cache-First strategy for all other app assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => {
-        if (event.request.mode === "navigate") {
-          return caches.match("./index.html");
-        }
-      });
+      return fetch(event.request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => {
+          // Fallback for offline navigation if needed
+        });
     }),
   );
 });
+
+// Helper function to serve partial content (206) from cached ArrayBuffer for PMTiles
+async function handleRangeRequest(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request, { ignoreSearch: true });
+
+  if (!cachedResponse) {
+    try {
+      const networkResponse = await fetch(request);
+      cache.put(request, networkResponse.clone());
+      return networkResponse;
+    } catch (err) {
+      return new Response("Offline and asset not cached", { status: 404 });
+    }
+  }
+
+  const rangeHeader = request.headers.get("range");
+  if (!rangeHeader) {
+    return cachedResponse;
+  }
+
+  const arrayBuffer = await cachedResponse.arrayBuffer();
+  const bytesRange = rangeHeader.replace(/bytes=/, "").split("-");
+  const start = parseInt(bytesRange[0], 10);
+  const end = bytesRange[1]
+    ? parseInt(bytesRange[1], 10)
+    : arrayBuffer.byteLength - 1;
+  const chunk = arrayBuffer.slice(start, end + 1);
+
+  return new Response(chunk, {
+    status: 206,
+    statusText: "Partial Content",
+    headers: cachedResponse.headers,
+  });
+}
