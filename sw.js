@@ -52,7 +52,7 @@ const STATIC_ASSETS = [
   "./assets/sprites/markers/sprites@3x.json",
   "./assets/sprites/markers/sprites@3x.png",
   "./assets/sprites/markers/sprites@4x.json",
-  "./assets/sprites/markers/sprites@4x.png",
+  "./assets/sprites/markers/sprites@4x.png"
 ];
 
 // Install Event: Cache all essential assets using STATIC_ASSETS
